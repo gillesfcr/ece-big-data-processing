@@ -1,3 +1,7 @@
 # books downloaded by the notebooks with !wget
 *.txt
 .ipynb_checkpoints/
+# datasets downloaded by the notebooks
+data/
+*.parquet
+*.csv
