@@ -1,6 +1,8 @@
 # books downloaded by the notebooks with !wget
 *.txt
 .ipynb_checkpoints/
+# python environment of the kafka lab
+.venv/
 # datasets downloaded by the notebooks
 data/
 *.parquet
