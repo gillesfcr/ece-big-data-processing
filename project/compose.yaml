@@ -1,0 +1,58 @@
+# ECE Big Data Processing - project stack
+# Kafka (KRaft, single broker) + Jupyter/PySpark (Spark in local mode).
+# Sized for an 8 GB laptop: give Docker at least 5 GB of RAM.
+
+services:
+  kafka:
+    image: apache/kafka-native:4.1.1
+    container_name: project_kafka
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:19092,EXTERNAL://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,EXTERNAL://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      # keep the broker small, Spark needs the memory
+      KAFKA_HEAP_OPTS: "-Xms256m -Xmx512m"
+      # wiki events are only needed for the test window
+      KAFKA_LOG_RETENTION_HOURS: 24
+    mem_limit: 768m
+    networks:
+      - project-net
+
+  pyspark:
+    image: quay.io/jupyter/pyspark-notebook
+    container_name: project_pyspark
+    user: root
+    ports:
+      - "8888:8888"
+      - "4040:4040"
+    environment:
+      - NB_UID=${UID:-1000}
+      - NB_GID=${GID:-1000}
+      - CHOWN_EXTRA=/home/jovyan/work,/home/jovyan/jobs,/home/jovyan/data
+      - CHOWN_EXTRA_OPTS=-R
+      # memory of the Spark driver (local mode = driver does everything)
+      - SPARK_DRIVER_MEMORY=${SPARK_DRIVER_MEMORY:-3g}
+      - KAFKA_BOOTSTRAP=kafka:19092
+      - PYTHONPATH=/home/jovyan/jobs
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./jobs:/home/jovyan/jobs
+      - ./data:/home/jovyan/data
+    networks:
+      - project-net
+    depends_on:
+      - kafka
+
+networks:
+  project-net:
+    driver: bridge
