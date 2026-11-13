@@ -52,13 +52,13 @@ Jupyter is available at <http://localhost:8888> and the Spark UI at
 ### 2. Download the IMDb dataset
 
 ```bash
-docker exec -it project_pyspark python /home/jovyan/jobs/download_imdb.py
+docker exec -it project_pyspark spark-submit --driver-memory 3g /home/jovyan/jobs/download_imdb.py
 ```
 
 ### 3. Ingest the raw files (bronze layer)
 
 ```bash
-docker exec -it project_pyspark python /home/jovyan/jobs/ingest_bronze.py
+docker exec -it project_pyspark spark-submit --driver-memory 3g /home/jovyan/jobs/ingest_bronze.py
 ```
 
 A single table can be (re)ingested with

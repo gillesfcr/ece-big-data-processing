@@ -1,7 +1,7 @@
 """Download the IMDb non-commercial datasets into data/raw.
 
 Usage (inside the pyspark container):
-    python /home/jovyan/jobs/download_imdb.py [--force]
+    spark-submit --driver-memory 3g /home/jovyan/jobs/download_imdb.py
 
 Files already present are skipped unless --force is given.
 Source: https://developer.imdb.com/non-commercial-datasets/

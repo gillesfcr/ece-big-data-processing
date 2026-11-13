@@ -1,8 +1,8 @@
 """Convert the raw IMDb TSV files into Parquet (bronze layer).
 
 Usage (inside the pyspark container):
-    python /home/jovyan/jobs/ingest_bronze.py [table ...]
-
+    spark-submit --driver-memory 3g /home/jovyan/jobs/ingest_bronze.py
+    
 Without arguments every table is converted. Every column is kept as a
 string and "\\N" / empty values are NOT converted, so the data preparation
 step can measure exactly how values are missing (\\N vs empty vs blank).
